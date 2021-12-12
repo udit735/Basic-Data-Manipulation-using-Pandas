@@ -1,0 +1,62 @@
+import pandas as pd
+pd.set_option('display.max_colwidth', -1)
+
+jeopardy = pd.read_csv('jeopardy.csv')
+
+# print(jeopardy)
+
+
+# Using strip method to clean column
+jeopardy.columns = jeopardy.columns.str.replace(' ', '')
+# print(jeopardy)
+print(jeopardy.columns)
+
+# Defining a function to filters the question for strings in a list
+
+def match_string_in_list(df, str_list):
+  return df.loc[df["Question"].apply(lambda x: all(word.lower() in x.lower() for word in str_list))]
+
+jeopardy_new = match_string_in_list(jeopardy, ["King"])
+# print(jeopardy_new)
+
+#5
+# print(jeopardy['Value'])
+
+# Converting the Value column to float
+
+jeopardy["Value New"] = jeopardy["Value"].apply(lambda x: float(x[1:].replace(',','')) if x != "None" else 0)
+
+# print(jeopardy["Value New"])
+
+# Mean
+# print(jeopardy["Value New"].mean())
+
+#6
+# Function to return unique count of answers to questions arranged by questions
+
+def unique_answer_count_by_question(df):
+  answer_count = df.groupby("Answer").Answer.count().sort_values(ascending = False)
+  return answer_count
+
+# Testing the function
+unique_answers = unique_answer_count_by_question(jeopardy)
+# print(unique_answers)
+
+#7
+# investigating the date column
+# print(jeopardy.AirDate)
+
+# Comparing usage of term computers in 90s vs from 2000s onward
+Computer_in_jeopardy = match_string_in_list(jeopardy, ["computer"])
+
+# print(Computer_in_jeopardy)
+
+computer_in_90s = Computer_in_jeopardy[(Computer_in_jeopardy["AirDate"] >= '1990-01-01') & (Computer_in_jeopardy["AirDate"] <= '1999-12-31')]
+# print(computer_in_90s)
+
+computer_in_00s = Computer_in_jeopardy[Computer_in_jeopardy["AirDate"] >= '2000-01-01']
+# print(computer_in_00s)
+
+print(jeopardy.Round.unique())
+print(jeopardy.Category.unique())
+print(jeopardy.groupby("Round").Category.unique())
